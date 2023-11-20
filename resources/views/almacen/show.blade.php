@@ -42,8 +42,18 @@
                                                 class="text-uppercase text-center text-dark text-xxs font-weight-bolder ps-2">
                                                 Producto
                                             </th>
+                                            <th
+                                                class="text-uppercase text-center text-dark text-xxs font-weight-bolder ps-2">
+                                                Proveedor
+                                            </th>
                                             <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
                                                 Cantidad
+                                            </th>
+                                            <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
+                                                Presentación
+                                            </th>
+                                            <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
+                                                Doc Referencial
                                             </th>
                                             <th class="text-uppercase text-dark text-xxs font-weight-bolder">
                                                 Aciones
@@ -77,8 +87,26 @@
                                                     </td>
                                                     <td class="text-center">
                                                         <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $almacen_producto->nombre_proveedor }}</p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
                                                             {{ $almacen_producto->cantidad }}</p>
                                                     </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $almacen_producto->presentacion }}</p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            <a href="{{ $almacen_producto->doc }}" target="_blank"
+                                                                class="mx-1 btn btn-success" type="button">
+                                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                                            </a>
+                                                        </p>
+                                                    </td>
+
+
                                                     <td class="d-flex">
                                                         {{-- <a href="{{ route('almacen.show', $almacen_producto->id) }}"
                                                             class="mx-1 btn btn-success" type="button">
@@ -88,7 +116,8 @@
                                                             class="mx-3 btn btn-dark" type="button">
                                                             <i class="fas fa-edit"></i>
                                                         </a> --}}
-                                                        <form action="{{ route('almacen.destroy', $almacen_producto->id) }}"
+                                                        <form
+                                                            action="{{ route('almacen.remove.producto', $almacen_producto->id) }}"
                                                             method="POST" enctype="multipart/form-data">
                                                             @csrf
                                                             @method('DELETE')

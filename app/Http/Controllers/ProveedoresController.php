@@ -30,15 +30,26 @@ class ProveedoresController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'nombre'=> 'required',
-            'ruc'=> 'required',
-            'direccion'=> 'required'
+            'nombre' => 'required',
+            'ruc' => 'required',
+            'direccion' => 'required',
+            'name_contacto' => 'required',
+            'email' => 'required',
+            'telefono' => 'required',
+            'direc_contacto' => 'required',
+            'descripcion' => 'required'
+
         ]);
 
         $proveedor = new Proveedore();
         $proveedor->name = $request->nombre;
         $proveedor->ruc = $request->ruc;
         $proveedor->direccion = $request->direccion;
+        $proveedor->name_contacto = $request->name_contacto;
+        $proveedor->email = $request->email;
+        $proveedor->telefono = $request->telefono;
+        $proveedor->direc_contacto = $request->direc_contacto;
+        $proveedor->descripcion = $request->descripcion;
         $proveedor->save();
 
         return redirect()->route('proveedores.index')->with('success', 'Proveedor creado satisfactoriamente');
@@ -67,15 +78,25 @@ class ProveedoresController extends Controller
     public function update(Request $request, string $id)
     {
         $this->validate($request, [
-            'nombre'=> 'required',
-            'ruc'=> 'required',
-            'direccion'=> 'required'
+            'nombre' => 'required',
+            'ruc' => 'required',
+            'direccion' => 'required',
+            'name_contacto' => 'required',
+            'email' => 'required',
+            'telefono' => 'required',
+            'direc_contacto' => 'required',
+            'descripcion' => 'required'
         ]);
 
         $proveedor = Proveedore::find($id);
         $proveedor->name = $request->nombre;
         $proveedor->ruc = $request->ruc;
         $proveedor->direccion = $request->direccion;
+        $proveedor->name_contacto = $request->name_contacto;
+        $proveedor->email = $request->email;
+        $proveedor->telefono = $request->telefono;
+        $proveedor->direc_contacto = $request->direc_contacto;
+        $proveedor->descripcion = $request->descripcion;
         $proveedor->save();
 
         return redirect()->route('proveedores.index')->with('success', 'Proveedor actualizado satisfactoriamente');
@@ -88,6 +109,6 @@ class ProveedoresController extends Controller
     {
         $proveedor = Proveedore::find($id);
         $proveedor->delete();
-        return redirect()->route('proveedores.index')->with('success','Proveedor eliminado satisfactoriamente');
+        return redirect()->route('proveedores.index')->with('success', 'Proveedor eliminado satisfactoriamente');
     }
 }

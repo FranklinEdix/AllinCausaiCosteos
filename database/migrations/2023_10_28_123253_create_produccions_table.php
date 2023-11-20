@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('produccions', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
+            $table->string('presentacion');
             $table->string('descripcion');
             $table->string('producto_final');
             $table->integer('cantidad_producto_final');
-            $table->decimal('gasto_total', 8, 2);
-            $table->decimal('precio_total',8,2);
+            $table->decimal('gasto_total', 8, 2)->default(0.00);
+            $table->decimal('precio_total', 8, 2)->default(0.00);
             $table->timestamps();
         });
     }

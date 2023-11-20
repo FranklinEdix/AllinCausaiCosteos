@@ -42,6 +42,10 @@
                                                 class="text-uppercase text-center text-dark text-xxs font-weight-bolder ps-2">
                                                 Nombre
                                             </th>
+                                            <th
+                                                class="text-uppercase text-center text-dark text-xxs font-weight-bolder ps-2">
+                                                Presentación
+                                            </th>
                                             <th class="text-uppercase text-center text-dark text-xxs font-weight-bolder">
                                                 Precio por unidad
                                             </th>
@@ -77,6 +81,11 @@
                                                     <td class="text-center">
                                                         <p class="text-xs font-weight-bold mb-0">
                                                             {{ $producto->name }}
+                                                        </p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $producto->presentacion_producto }}
                                                         </p>
                                                     </td>
                                                     <td class="text-center">

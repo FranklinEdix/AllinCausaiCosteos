@@ -14,9 +14,9 @@ class ProductosController extends Controller
      */
     public function index()
     {
-        $productos = Producto::join('categorias', 'productos.id_categoria', '=', 'categorias.id')
-                    ->select('productos.*', 'categorias.name as nombre_categoria')
-                    ->get();
+        $productos = Producto::leftjoin('categorias', 'productos.id_categoria', '=', 'categorias.id')
+            ->select('productos.*', 'categorias.name as nombre_categoria')
+            ->get();
         return view("productos.index", compact("productos"));
     }
 
@@ -36,6 +36,7 @@ class ProductosController extends Controller
     {
         $this->validate($request, [
             'nombre' => 'required',
+            'presentacion_producto' => 'required',
             'categoria' => 'required',
             'precio_unitario' => 'required',
             'cantidad' => 'required',
@@ -43,12 +44,13 @@ class ProductosController extends Controller
 
         $producto = new Producto();
         $producto->name = $request->nombre;
+        $producto->presentacion_producto = $request->presentacion_producto;
         $producto->id_categoria = $request->categoria;
         $producto->precio_unitario = $request->precio_unitario;
         $producto->cantidad = $request->cantidad;
         $producto->save();
 
-        return redirect()->route('productos.index')->with('success','Producto registrado exitosamente');
+        return redirect()->route('productos.index')->with('success', 'Producto registrado exitosamente');
     }
 
     /**
@@ -56,7 +58,6 @@ class ProductosController extends Controller
      */
     public function show(string $id)
     {
-
     }
 
     /**
@@ -65,9 +66,9 @@ class ProductosController extends Controller
     public function edit(string $id)
     {
         $producto = Producto::join('categorias', 'productos.id_categoria', '=', 'categorias.id')
-                            ->select('productos.*', 'categorias.name as nombre_categoria')
-                            ->where('productos.id', '=', $id)
-                            ->firstOrFail();
+            ->select('productos.*', 'categorias.name as nombre_categoria')
+            ->where('productos.id', '=', $id)
+            ->firstOrFail();
         $categorias = Categoria::all();
         return view('productos.edit', compact('producto', 'categorias'));
     }
@@ -79,6 +80,7 @@ class ProductosController extends Controller
     {
         $this->validate($request, [
             'nombre' => 'required',
+            'presentacion_producto' => 'required',
             'categoria' => 'required',
             'precio_unitario' => 'required',
             'cantidad' => 'required',
@@ -86,12 +88,13 @@ class ProductosController extends Controller
 
         $producto = Producto::find($id);
         $producto->name = $request->nombre;
+        $producto->presentacion_producto = $request->presentacion_producto;
         $producto->id_categoria = $request->categoria;
         $producto->precio_unitario = $request->precio_unitario;
         $producto->cantidad = $request->cantidad;
         $producto->save();
 
-        return redirect()->route('productos.index')->with('success','Producto actualizado exitosamente');
+        return redirect()->route('productos.index')->with('success', 'Producto actualizado exitosamente');
     }
 
     /**
@@ -102,6 +105,6 @@ class ProductosController extends Controller
         $producto = Producto::find($id);
         $producto->delete();
 
-        return redirect()->route('productos.index')->with('success','Producto eliminado exitosamente');
+        return redirect()->route('productos.index')->with('success', 'Producto eliminado exitosamente');
     }
 }

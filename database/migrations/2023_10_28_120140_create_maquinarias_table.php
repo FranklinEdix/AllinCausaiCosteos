@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('serie')->nullable();
             $table->string('placa')->nullable();
             $table->string('color')->nullable();
+            $table->string('descripcion')->nullable();
+            $table->string('mantenimiento')->nullable();
             $table->timestamps();
         });
     }

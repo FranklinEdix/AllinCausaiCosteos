@@ -29,17 +29,21 @@ class MaquinariasController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'nombre' => 'required',
             'precio_consumo_hora' => 'required',
+            'descripcion' => 'required',
+            'mantenimiento' => 'required'
         ]);
 
         $maquinaria = new Maquinaria();
         $maquinaria->nombre = $request->nombre;
         $maquinaria->precio_consumo_hora = $request->precio_consumo_hora;
+        $maquinaria->descripcion = $request->descripcion;
+        $maquinaria->mantenimiento = $request->mantenimiento;
         $maquinaria->save();
 
-        return redirect()->route('maquinarias.index')->with('success','Maquinaria creada correctamente');
+        return redirect()->route('maquinarias.index')->with('success', 'Maquinaria creada correctamente');
     }
 
     /**
@@ -64,17 +68,21 @@ class MaquinariasController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'nombre' => 'required',
             'precio_consumo_hora' => 'required',
+            'descripcion' => 'required',
+            'mantenimiento' => 'required'
         ]);
 
         $maquinaria = Maquinaria::find($id);
         $maquinaria->nombre = $request->nombre;
         $maquinaria->precio_consumo_hora = $request->precio_consumo_hora;
+        $maquinaria->descripcion = $request->descripcion;
+        $maquinaria->mantenimiento = $request->mantenimiento;
         $maquinaria->save();
 
-        return redirect()->route('maquinarias.index')->with('success','Maquinaria actualizada correctamente');
+        return redirect()->route('maquinarias.index')->with('success', 'Maquinaria actualizada correctamente');
     }
 
     /**
@@ -85,6 +93,6 @@ class MaquinariasController extends Controller
         $maquinaria = Maquinaria::find($id);
         $maquinaria->delete();
 
-        return redirect()->route('maquinarias.index')->with('success','Maquinaria eliminada correctamente');
+        return redirect()->route('maquinarias.index')->with('success', 'Maquinaria eliminada correctamente');
     }
 }

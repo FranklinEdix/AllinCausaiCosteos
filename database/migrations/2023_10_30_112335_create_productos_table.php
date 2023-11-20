@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('id_categoria');
             $table->string('name');
+            $table->string('presentacion_producto');
             $table->decimal('precio_unitario', 8, 2);
             $table->integer('cantidad')->default(0);
             $table->timestamps();

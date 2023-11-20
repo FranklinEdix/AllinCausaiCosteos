@@ -16,6 +16,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('ruc');
             $table->string('direccion');
+            $table->string('name_contacto');
+            $table->string('email');
+            $table->string('telefono');
+            $table->string('direc_contacto');
+            $table->string('descripcion');
             $table->timestamps();
         });
     }
