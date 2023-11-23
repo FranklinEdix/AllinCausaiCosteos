@@ -15,7 +15,10 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('id_almacen');
             $table->bigInteger('id_producto');
+            $table->bigInteger('id_proveedor');
             $table->integer('cantidad');
+            $table->string('presentacion');
+            $table->string('doc');
             $table->timestamps();
         });
     }

@@ -39,6 +39,9 @@
                                                 Nombre
                                             </th>
                                             <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
+                                                Presentación
+                                            </th>
+                                            <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
                                                 Descripción
                                             </th>
                                             <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
@@ -83,6 +86,11 @@
                                                     <td class="text-center">
                                                         <p class="text-xs font-weight-bold mb-0">
                                                             {{ $value->nombre }}
+                                                        </p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $value->presentacion }}
                                                         </p>
                                                     </td>
                                                     <td class="text-center">

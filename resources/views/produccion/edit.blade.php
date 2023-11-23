@@ -27,6 +27,13 @@
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
 
+                                        <label for="presentacion">Presentación </label>
+                                        <input type="text" name="presentacion" class="form-control"
+                                            value="{{ $produccion->presentacion }}" required>
+                                        @error('presentacion')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+
                                         <label for="descripcion">Descripción: </label>
                                         <input type="text" name="descripcion" class="form-control"
                                             value="{{ $produccion->descripcion }}" required>

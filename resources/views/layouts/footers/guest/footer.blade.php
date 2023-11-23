@@ -8,7 +8,7 @@
                           Copyright ©
                           <script>
                               document.write(new Date().getFullYear())
-                          </script> TOSTADURIA DE KELLY.
+                          </script> Allin QAUSAI.
                       </p>
                   </div>
               </div>

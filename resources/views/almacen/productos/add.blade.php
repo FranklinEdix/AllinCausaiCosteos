@@ -31,12 +31,41 @@
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
 
+                                        <label for="proveedor">Proveedor: </label>
+                                        <select name="proveedor" id="" class="form-control">
+                                            <option value="{{ null }}" selected disabled>Seleccione un proveedor
+                                            </option>
+                                            @foreach ($proveedores as $proveedor)
+                                                <option value="{{ $proveedor->id }}">{{ $proveedor->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('proveedor')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+
                                         <label for="cantidad">Cantidad: </label>
                                         <input type="number" name="cantidad" class="form-control"
                                             value="{{ old('cantidad') }}" required>
                                         @error('cantidad')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
+
+                                        <label for="presentacion">Presentación: </label>
+                                        <input type="text" name="presentacion" class="form-control"
+                                            value="{{ old('presentacion') }}" required>
+                                        @error('presentacion')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+
+                                        <label for="doc">Documento Referencial, ingrese link del archivo drive:
+                                        </label>
+                                        <input type="text" name="doc" class="form-control"
+                                            value="{{ old('doc') }}" required>
+                                        @error('doc')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+
+
                                     </div>
                                     <div class="col-md-4 d-flex p-4">
                                         <button type="submit" class="btn btn-success">Guardar</button>

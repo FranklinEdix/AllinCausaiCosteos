@@ -38,6 +38,42 @@
                                         @error('direccion')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
+
+                                        <label for="name_contacto">Nombre del contacto: </label>
+                                        <input type="text" name="name_contacto" class="form-control"
+                                            value="{{ old('name_contacto') }}" required>
+                                        @error('name_contacto')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+
+                                        <label for="email">Correo: </label>
+                                        <input type="text" name="email" class="form-control"
+                                            value="{{ old('email') }}" required>
+                                        @error('email')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+
+                                        <label for="telefono">teléfono: </label>
+                                        <input type="text" name="telefono" class="form-control"
+                                            value="{{ old('telefono') }}" required>
+                                        @error('telefono')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+
+                                        <label for="direc_contacto">Dirección del contacto: </label>
+                                        <input type="text" name="direc_contacto" class="form-control"
+                                            value="{{ old('direc_contacto') }}" required>
+                                        @error('direc_contacto')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+
+                                        <label for="descripcion">Descripción </label>
+                                        <input type="text" name="descripcion" class="form-control"
+                                            value="{{ old('descripcion') }}" required>
+                                        @error('descripcion')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+
                                     </div>
                                     <div class="col-md-4 d-flex p-4">
                                         <button type="submit" class="btn btn-success">Guardar</button>

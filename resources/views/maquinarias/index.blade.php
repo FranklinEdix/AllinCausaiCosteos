@@ -41,6 +41,13 @@
                                             <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
                                                 Gasto total por hora
                                             </th>
+                                            <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
+                                                Descripción
+                                            </th>
+                                            <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
+                                                Tiempo de Mantenimiento
+                                            </th>
+
                                             {{-- <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
                                                 Gasto total por mes
                                             </th> --}}
@@ -74,6 +81,15 @@
                                                         <p class="text-xs font-weight-bold mb-0">
                                                             {{ $maquinaria->precio_consumo_hora }}</p>
                                                     </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $maquinaria->descripcion }}</p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $maquinaria->mantenimiento }}</p>
+                                                    </td>
+
                                                     {{-- <td class="text-center">
                                                         <p class="text-xs font-weight-bold mb-0">
                                                             {{ $maquinaria->precio_consumo_mensual }}</p>

@@ -32,6 +32,21 @@
                                         @error('precio_consumo_hora')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
+
+                                        <label for="descripcion">Descripción: </label>
+                                        <input type="text" name="descripcion" class="form-control"
+                                            value="{{ old('descripcion') }}" required>
+                                        @error('descripcion')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+
+                                        <label for="mantenimiento">Tiempo de Mantenimiento: </label>
+                                        <input type="text" name="mantenimiento" class="form-control"
+                                            value="{{ old('mantenimiento') }}" required>
+                                        @error('mantenimiento')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+
                                     </div>
                                     <div class="col-md-4 d-flex p-4">
                                         <button type="submit" class="btn btn-success">Guardar</button>

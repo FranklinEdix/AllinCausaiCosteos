@@ -54,6 +54,13 @@
                                             <small class="text-danger">{{ $message }}</small>
                                             <br>
                                         @enderror
+                                        <label for="presentacion_producto">Presentación: </label>
+                                        <input type="text" name="presentacion_producto" class="form-control"
+                                            value="{{ $producto->presentacion_producto }}" required>
+                                        @error('presentacion_producto')
+                                            <small class="text-danger">{{ $message }}</small>
+                                            <br>
+                                        @enderror
 
                                         <label for="precio_unitario">Precio unitario: </label>
                                         <input type="number" name="precio_unitario" class="form-control"

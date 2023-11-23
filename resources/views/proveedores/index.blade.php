@@ -44,6 +44,21 @@
                                             <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
                                                 Dirección
                                             </th>
+                                            <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
+                                                Nombre Contacto
+                                            </th>
+                                            <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
+                                                Correo
+                                            </th>
+                                            <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
+                                                Teléfono
+                                            </th>
+                                            <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
+                                                Dirección Contacto
+                                            </th>
+                                            <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
+                                                Descripción
+                                            </th>
                                             <th class="text-uppercase text-dark text-xxs font-weight-bolder">
                                                 Aciones
                                             </th>
@@ -75,6 +90,26 @@
                                                     <td class="text-center">
                                                         <p class="text-xs font-weight-bold mb-0">
                                                             {{ $proveedor->direccion }}</p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $proveedor->name_contacto }}</p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $proveedor->email }}</p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $proveedor->telefono }}</p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $proveedor->direc_contacto }}</p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $proveedor->descripcion }}</p>
                                                     </td>
                                                     <td class="d-flex">
 

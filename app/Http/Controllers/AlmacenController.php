@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Almacen;
 use App\Models\AlmacenProducto;
 use App\Models\Producto;
+use App\Models\Proveedore;
 
 class AlmacenController extends Controller
 {
@@ -32,8 +33,8 @@ class AlmacenController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'nombre'=> 'required',
-            'descripcion'=> 'required',
+            'nombre' => 'required',
+            'descripcion' => 'required',
         ]);
 
         $almacen = new Almacen();
@@ -41,7 +42,7 @@ class AlmacenController extends Controller
         $almacen->descripcion = $request->descripcion;
         $almacen->save();
 
-        return redirect()->route('almacen.index')->with('success','Almacen creado satisfactoriamente');
+        return redirect()->route('almacen.index')->with('success', 'Almacen creado satisfactoriamente');
     }
 
     /**
@@ -50,11 +51,14 @@ class AlmacenController extends Controller
     public function show(string $id)
     {
         $almacen_productos = AlmacenProducto::join('productos', 'almacen_productos.id_producto', '=', 'productos.id')
-        ->join('almacens', 'almacen_productos.id_almacen', '=', 'almacens.id')
-        ->select('almacen_productos.*', 'productos.name as nombre_producto', 'almacens.name as nombre_almacen')
-        ->where('almacen_productos.id_almacen', $id)
-        ->get();
+            ->join('almacens', 'almacen_productos.id_almacen', '=', 'almacens.id')
+            ->join('proveedores', 'almacen_productos.id_proveedor', '=', 'proveedores.id') // Join con la tabla de proveedores
+            ->select('almacen_productos.*', 'productos.name as nombre_producto', 'almacens.name as nombre_almacen', 'proveedores.name as nombre_proveedor') // Incluye el nombre del proveedor
+            ->where('almacen_productos.id_almacen', $id)
+            ->get();
+
         $almacen = Almacen::find($id);
+
         return view('almacen.show', compact('almacen_productos', 'almacen'));
     }
 
@@ -73,8 +77,8 @@ class AlmacenController extends Controller
     public function update(Request $request, string $id)
     {
         $this->validate($request, [
-            'nombre'=> 'required',
-            'descripcion'=> 'required',
+            'nombre' => 'required',
+            'descripcion' => 'required',
         ]);
 
         $almacen = Almacen::find($id);
@@ -82,7 +86,7 @@ class AlmacenController extends Controller
         $almacen->descripcion = $request->descripcion;
         $almacen->save();
 
-        return redirect()->route('almacen.index')->with('success','Almacen actualizado satisfactoriamente');
+        return redirect()->route('almacen.index')->with('success', 'Almacen actualizado satisfactoriamente');
     }
 
     /**
@@ -91,29 +95,45 @@ class AlmacenController extends Controller
     public function destroy(string $id)
     {
         Almacen::find($id)->delete();
-        return redirect()->route('almacen.index')->with('success','Almacen eliminado satisfactoriamente');
+        return redirect()->route('almacen.index')->with('success', 'Almacen eliminado satisfactoriamente');
     }
 
     public function agregarProducto(string $id)
     {
         $almacen = Almacen::find($id);
         $productos = Producto::all();
-        return view('almacen.productos.add', compact('almacen', 'productos'));
+        $proveedores = Proveedore::all();
+        return view('almacen.productos.add', compact('almacen', 'productos', 'proveedores'));
     }
 
     public function addproductoAlmacen(Request $request, $id)
     {
         $this->validate($request, [
-            'producto'=>'required',
-            'cantidad'=>'required'
+            'producto' => 'required',
+            'proveedor' => 'required',
+            'cantidad' => 'required',
+            'presentacion' => 'required',
+            'doc' => 'required'
+
         ]);
 
         $almacen_producto = new AlmacenProducto();
         $almacen_producto->id_almacen = $id;
         $almacen_producto->id_producto = $request->producto;
+        $almacen_producto->id_proveedor = $request->proveedor;
         $almacen_producto->cantidad = $request->cantidad;
+        $almacen_producto->presentacion = $request->presentacion;
+        $almacen_producto->doc = $request->doc;
         $almacen_producto->save();
 
-        return redirect()->route('almacen.show', $id)->with('success','Producto agregado satisfactoriamente');
+        return redirect()->route('almacen.show', $id)->with('success', 'Producto agregado satisfactoriamente');
+    }
+
+    public function removeProducto(string $id)
+    {
+        $almacen_productos = AlmacenProducto::find($id);
+        $id_almacen = $almacen_productos->id_almacen;
+        $almacen_productos->delete();
+        return redirect()->route('almacen.show', $id_almacen)->with('success', 'Producto removido del almacén satisfactoriamente');
     }
 }
