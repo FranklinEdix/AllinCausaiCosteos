@@ -92,6 +92,12 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('produccion/add/{id}/proceso', [ProduccionController::class, 'agregarProceso'])->name('produccion.add.proceso');
 	Route::post('produccion/add/{id}/proceso', [ProduccionController::class, 'agregarProcesoStore'])->name('produccion.agregar.proceso');
 	Route::delete('produccion/remove/proceso/{id}', [ProduccionController::class, 'removeProceso'])->name('produccion.eliminar.proceso');
+
+    //Detalle de proceso
+    Route::get('produccion/detalle/proceso/{id}',[ProduccionController::class, 'detalleProceso'])->name('produccion.detalle.proceso');
+
+    //Exportar en pdf y excel
+    Route::get('produccion/exportar/pdf/{id}',[ProduccionController::class, 'exportarDetalleProduccionPDF'])->name('produccion.exportar.pdf');
 });
 
 

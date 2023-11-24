@@ -94,6 +94,19 @@
                                                         value="{{ old('new_precio_maquina') }}"
                                                         placeholder="Gasto: Ingrese el gasto por hora, solo si el gasto varió">
                                                 </div>
+                                                <div class="col-md-3 mt-2">
+                                                    <input type="number" class="form-control"
+                                                        name="tiempo_trabajo_maquina[{{ $maquinaria->id }}]"
+                                                        value="{{ old('tiempo_trabajo_maquina') }}"
+                                                        placeholder="Ingrese el tiempo de trabajo">
+                                                </div>
+                                                <div class="col-md-1 mt-2">
+                                                    <select name="tiempo_maquina[{{ $maquinaria->id }}]"
+                                                        id="formato_tiempo" class="form-control">
+                                                        <option value="hrs">Horas</option>
+                                                        <option value="min">Minutos</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         @endforeach
                                         @error('maquinarias')
@@ -103,7 +116,8 @@
                                         <label for="colaboradores">Colaboradores: </label>
                                         <br>
                                         <a href="{{ route('colaboradores.index') }}"
-                                            class="btn bg-gradient-primary btn-sm mb-0" type="button" target="__blanck">Ver
+                                            class="btn bg-gradient-primary btn-sm mb-0" type="button"
+                                            target="__blanck">Ver
                                             Todos los Colaboradores</a>
                                         @foreach ($colaboradores as $colaborador)
                                             <div class="row">
@@ -122,6 +136,19 @@
                                                         value="{{ old('new_precio_colaborador') }}"
                                                         placeholder="Pago: Ingrese el pago por hora, solo si el pago varió">
                                                 </div>
+                                                <div class="col-md-3 mt-2">
+                                                    <input type="number" class="form-control"
+                                                        name="tiempo_trabajo_colaborador[{{ $colaborador->id }}]"
+                                                        value="{{ old('tiempo_trabajo_colaborador') }}"
+                                                        placeholder="Ingrese el tiempo de trabajo">
+                                                </div>
+                                                <div class="col-md-1 mt-2">
+                                                    <select name="tiempo[{{ $colaborador->id }}]" id="formato_tiempo"
+                                                        class="form-control">
+                                                        <option value="hrs">Horas</option>
+                                                        <option value="min">Minutos</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         @endforeach
                                         @error('colaboradores')
@@ -130,7 +157,7 @@
                                     </div>
                                     <div class="col-md-4 d-flex p-4">
                                         <button type="submit" class="btn btn-success">Guardar</button>
-                                        <a href="{{ route('produccion.index') }}" class="btn btn-danger"
+                                        <a href="{{ route('produccion.show', $id) }}" class="btn btn-danger"
                                             style="margin-left: 5px;">Cancelar</a>
                                     </div>
                                 </div>

@@ -42,8 +42,14 @@
                                         @enderror
 
                                         <label for="producto_final">Producto Final: </label>
-                                        <input type="text" name="producto_final" class="form-control"
-                                            value="{{ $produccion->producto_final }}" required>
+                                        <select name="producto_final" id="producto_final" class="form-control">
+                                            <option value="{{ $produccion->producto_final }}" selected>
+                                                {{ $produccion->nombre_producto }}</option>
+                                            @foreach ($productos as $producto)
+                                                <option value="{{ $producto->id }}">{{ $producto->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                         @error('producto_final')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->decimal('gasto_total_insumos', 8, 2);
             $table->decimal('gasto_total_maquinarias', 8, 2);
             $table->decimal('gasto_total_colaboradores', 8, 2);
+            $table->text('data_tiempos_procedimiento')->nullable();
             $table->timestamps();
         });
     }

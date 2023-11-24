@@ -9,6 +9,8 @@ use App\Models\Insumo;
 use App\Models\Colaborador;
 use App\Models\DetailsProduccion;
 use App\Models\Producto;
+use App\Models\Almacen;
+use App\Models\AlmacenProducto;
 
 class ProduccionController extends Controller
 {
@@ -26,6 +28,7 @@ class ProduccionController extends Controller
         foreach ($produccion as $value) {
             $id = intval($value->id_producto);
             $producto = Producto::find($id);
+            $value->precio_unitario = $producto->precio_unitario;
             $precio_total = $producto->precio_unitario * $value->cantidad_producto_final;
             $detalle_produccion =  DetailsProduccion::where('produccion_id', $value->id)->get();
             if ($detalle_produccion) {
@@ -104,7 +107,10 @@ class ProduccionController extends Controller
     public function edit(string $id)
     {
         $produccion = Produccion::find($id);
-        return view('produccion.edit', compact('produccion'));
+        $productos = Producto::where('id', '!=' , $produccion->producto_final)->get();
+        $producto = Producto::find($produccion->producto_final);
+        $produccion['nombre_producto'] = $producto->name;
+        return view('produccion.edit', compact('produccion', 'productos'));
     }
 
     /**
@@ -120,12 +126,16 @@ class ProduccionController extends Controller
             'cantidad_producto_final' => 'required'
         ]);
 
+        $productos = Producto::find($request->producto_final);
+        $precio_total = $request->cantidad_producto_final * $productos->precio_unitario;
+
         $produccion = Produccion::find($id);
         $produccion->nombre = $request->nombre;
         $produccion->presentacion = $request->presentacion;
         $produccion->descripcion = $request->descripcion;
         $produccion->producto_final = $request->producto_final;
         $produccion->cantidad_producto_final = $request->cantidad_producto_final;
+        $produccion->precio_total = $precio_total;
         $produccion->save();
 
         return redirect()->route('produccion.index')->with('success', 'Registro actualizado satisfactoriamente');
@@ -153,68 +163,128 @@ class ProduccionController extends Controller
     public function agregarProcesoStore(Request $request, $id)
     {
         //return $request;
-        $this->validate($request, []);
-
-        $gasto_total_insumos = 0;
+        $gasto_total_insumos = [];
         $gasto_total_maquinarias = 0;
         $gasto_total_colaboradores = 0;
         $cantidad = 0;
         $precio_nuevo = 0;
-
-        foreach ($request->insumos as $insumo) {
-            $insumo = Insumo::find($insumo);
-            foreach ($request->cantidad as $key => $value) {
-                if ($key == $insumo->id) {
-                    if (!is_null($value)) {
-                        $cantidad = $value;
-                    } else {
-                        $cantidad = 1;
+        $insumos_data = [];
+        $maquinarias_data = [];
+        $colaboradores_data = [];
+        $data_tiempos_procedimiento = [];
+        if(isset($request->insumos)){
+            foreach ($request->insumos as $insumo) {
+                $insumo = Insumo::find($insumo);
+                foreach ($request->cantidad as $key => $value) {
+                    if ($key == $insumo->id) {
+                        if(!is_null($value)){
+                            $cantidad = $value;
+                        }else{
+                            $cantidad = 0;
+                        }
+                        $data_tiempos_procedimiento[] = [
+                            'id' => $insumo->id,
+                            'maquinaria' => 0,
+                            'colaborador' => 0,
+                            'insumo' => 1,
+                            'gasto' => round($insumo->precio_presentacion * $cantidad, 2),
+                            'cantidad' => $cantidad,
+                            'tiempo_trabajo' => 0,
+                            'tiempo_formato' => 'min'
+                        ];
+                        $gasto_total_insumos[] = round($insumo->precio_presentacion * $cantidad, 2);
                     }
                 }
             }
-            $gasto_total_insumos = $insumo->precio_presentacion * $cantidad;
+            $insumos_data = $request->insumos;
+            $gasto_total_insumos = array_sum($gasto_total_insumos);
         }
-
-        foreach ($request->maquinarias as $maquinaria) {
-            $maquinaria = Maquinaria::find($maquinaria);
-            $gasto_maquinaria = $maquinaria->precio_consumo_hora;
-            foreach ($request->new_precio_maquina as $key => $value) {
-                if ($key == $maquinaria->id) {
-                    if (!is_null($value)) {
-                        $gasto_maquinaria = $value;
-                    }
-                    $total = $gasto_maquinaria * $request->duracion_proceso;
-                }
-            }
-            $gasto_total_maquinarias += $total;
+        if(empty($gasto_total_insumos)){
+            $gasto_total_insumos = 0;
         }
-
-        foreach ($request->colaboradores as $colaborador) {
-            $colaborador = Colaborador::find($colaborador);
-            $gasto = $colaborador->sueldo_hora;
-            foreach ($request->new_precio_colaborador as $key => $value) {
-                if ($key == $colaborador->id) {
-                    if (!is_null($value)) {
-                        $gasto = $value;
+        if (isset($request->maquinarias)) {
+            foreach ($request->maquinarias as $maquinaria) {
+                $maquinaria = Maquinaria::find($maquinaria);
+                $gasto_maquinaria = $maquinaria->precio_consumo_hora;
+                foreach ($request->new_precio_maquina as $key => $value) {
+                    if ($key == $maquinaria->id) {
+                        if(!is_null($value)){
+                            $gasto_maquinaria = $value;
+                        }
+                        if($request->tiempo_maquina[$maquinaria->id] == 'min'){
+                            $total = ($gasto_maquinaria * $request->tiempo_trabajo_maquina[$maquinaria->id])/60;
+                            $total = round($total , 2);
+                            $tiempo_maquina = 'min';
+                        }else{
+                            $total = $gasto_maquinaria * $request->tiempo_trabajo_maquina[$maquinaria->id];
+                            $total = round($total , 2);
+                            $tiempo_maquina = 'hrs';
+                        }
+                        $data_tiempos_procedimiento[] = [
+                            'id' => $maquinaria->id,
+                            'maquinaria' => 1,
+                            'colaborador' => 0,
+                            'insumo' => 0,
+                            'gasto' => $total,
+                            'tiempo_trabajo' => $request->tiempo_trabajo_maquina[$maquinaria->id] ?? 0,
+                            'tiempo_formato' => $tiempo_maquina
+                        ];
                     }
-                    $total = $gasto * $request->duracion_proceso;
                 }
+                $gasto_total_maquinarias += $total;
             }
-            $gasto_total_colaboradores += $total;
+            $maquinarias_data = $request->maquinarias;
+        }
+        if(isset($request->colaboradores)) {
+            foreach ($request->colaboradores as $colaborador) {
+                $colaborador = Colaborador::find($colaborador);
+                $gasto = $colaborador->sueldo_hora;
+                foreach ($request->new_precio_colaborador as $key => $value) {
+                    if ($key == $colaborador->id) {
+                        if(!is_null($value)){
+                            $gasto = $value;
+                        }
+                        if($request->tiempo[$colaborador->id] == 'min'){
+                            $total = ($gasto * $request->tiempo_trabajo_colaborador[$colaborador->id])/60;
+                            $total = round($total , 2);
+                            $tiempo_colaborador = 'min';
+                        }else{
+                            $total = $gasto * $request->tiempo_trabajo_colaborador[$colaborador->id];
+                            $total = round($total , 2);
+                            $tiempo_colaborador = 'hrs';
+                        }
+                        $data_tiempos_procedimiento[] = [
+                            'id' => $colaborador->id,
+                            'maquinaria' => 0,
+                            'colaborador' => 1,
+                            'insumo' => 0,
+                            'gasto' => $total,
+                            'tiempo_trabajo' => $request->tiempo_trabajo_colaborador[$colaborador->id] ?? 0,
+                            'tiempo_formato' => $tiempo_colaborador
+                        ];
+                    }
+                }
+                $gasto_total_colaboradores += $total;
+            }
+            $colaboradores_data = $request->colaboradores;
         }
 
         $gasto_total = $gasto_total_insumos + $gasto_total_maquinarias + $gasto_total_colaboradores;
+        $gasto_total = round($gasto_total , 2);
+
+        //return $data_tiempos_procedimiento;
 
         $add_proceso = new DetailsProduccion();
         $add_proceso->produccion_id = $id;
         $add_proceso->codigo_proceso = $request->codigo_proceso;
         $add_proceso->nombre_proceso = $request->nombre;
-        $add_proceso->insumo_id = implode(',', $request->insumos);
-        $add_proceso->maquinaria_id = implode(',', $request->maquinarias);
-        $add_proceso->colaborador_id = implode(',', $request->colaboradores);
+        $add_proceso->insumo_id = implode(',',$insumos_data);
+        $add_proceso->maquinaria_id = implode(',',$maquinarias_data);
+        $add_proceso->colaborador_id = implode(',',$colaboradores_data);
         $add_proceso->gasto_total_insumos = $gasto_total_insumos;
         $add_proceso->gasto_total_maquinarias = $gasto_total_maquinarias;
         $add_proceso->gasto_total_colaboradores = $gasto_total_colaboradores;
+        $add_proceso->data_tiempos_procedimiento = json_encode($data_tiempos_procedimiento);
         $add_proceso->save();
 
         $produccion = Produccion::find($id);
@@ -222,7 +292,7 @@ class ProduccionController extends Controller
         $produccion->save();
 
 
-        return redirect()->route('produccion.show', $id)->with('success', 'Registro creado satisfactoriamente');
+        return redirect()->route('produccion.show', $id)->with('success','Registro creado satisfactoriamente');
     }
 
     public function removeProceso(string $id)
@@ -239,6 +309,110 @@ class ProduccionController extends Controller
         $produccion->gasto_total = $produccion->gasto_total - $gasto_total;
         $produccion->save();
 
-        return redirect()->route('produccion.index', $id)->with('success', 'Proceso eliminado satisfactoriamente');
+        return redirect()->route('produccion.show', $produccion_detalle->produccion_id)->with('success', 'Proceso eliminado satisfactoriamente');
+    }
+
+    public function detalleProceso(string $id)
+    {
+        $proceso = DetailsProduccion::find($id);
+        $data_insumos = explode(',',$proceso->insumo_id);
+        $data_maquinaria = explode(',',$proceso->maquinaria_id);
+        $data_colaborador = explode(',',$proceso->colaborador_id);
+        $insumos = [];
+        $maquinarias = [];
+        $colaboradores = [];
+        $data_tiempos_procedimiento = json_decode($proceso->data_tiempos_procedimiento);
+            foreach ($data_insumos as $value) {
+                if (!empty($value && !empty($data_tiempos_procedimiento))) {
+                    $insumo = Insumo::find($value);
+                    foreach ($data_tiempos_procedimiento as $value) {
+                        if ($value->insumo == 1 && $value->id == $insumo->id) {
+                            $insumo->gasto = $value->gasto;
+                            $insumo->cantidad = $value->cantidad;
+                        }
+                    }
+                    $insumos[] = $insumo;
+                }
+            }
+            foreach ($data_maquinaria as $value) {
+                if (!empty($value) && !empty($data_tiempos_procedimiento)) {
+                    $maquina = Maquinaria::find($value);
+                    foreach ($data_tiempos_procedimiento as $value) {
+                        if ($value->maquinaria == 1 && $value->id == $maquina->id) {
+                            $maquina->gasto = $value->gasto;
+                            $maquina->tiempo_trabajo = $value->tiempo_trabajo;
+                            $maquina->tiempo_formato = $value->tiempo_formato;
+                        }
+                    }
+                    $maquinarias[] = $maquina;
+                }
+            }
+            foreach ($data_colaborador as $value) {
+                if (!empty($value) && !empty($data_tiempos_procedimiento)) {
+                    $colaborador = Colaborador::find($value);
+                    foreach ($data_tiempos_procedimiento as $value) {
+                        if ($value->colaborador == 1 && $value->id == $colaborador->id) {
+                            $colaborador->gasto = $value->gasto;
+                            $colaborador->tiempo_trabajo = $value->tiempo_trabajo;
+                            $colaborador->tiempo_formato = $value->tiempo_formato;
+                        }
+                    }
+                    $colaboradores[] = $colaborador;
+                }
+            }
+        return view('produccion.procesos.detalle', compact('proceso', 'insumos', 'maquinarias', 'colaboradores'));
+    }
+
+    public function exportarDetalleProduccionPDF(string $id)
+    {
+        return $id;
+        $proceso = DetailsProduccion::find($id);
+        $data_insumos = explode(',',$proceso->insumo_id);
+        $data_maquinaria = explode(',',$proceso->maquinaria_id);
+        $data_colaborador = explode(',',$proceso->colaborador_id);
+        $insumos = [];
+        $maquinarias = [];
+        $colaboradores = [];
+        $data_tiempos_procedimiento = json_decode($proceso->data_tiempos_procedimiento);
+            foreach ($data_insumos as $value) {
+                if (!empty($value)) {
+                    $insumos[] = Insumo::find($value);
+                }
+            }
+            foreach ($data_maquinaria as $value) {
+                if (!empty($value) && !empty($data_tiempos_procedimiento)) {
+                    $maquina = Maquinaria::find($value);
+                    foreach ($data_tiempos_procedimiento as $value) {
+                        if ($value->maquinaria == 1 && $value->id == $maquina->id) {
+                            $maquina->gasto = $value->gasto;
+                            $maquina->tiempo_trabajo = $value->tiempo_trabajo;
+                            $maquina->tiempo_formato = $value->tiempo_formato;
+                        }
+                    }
+                    $maquinarias[] = $maquina;
+                }
+            }
+            foreach ($data_colaborador as $value) {
+                if (!empty($value) && !empty($data_tiempos_procedimiento)) {
+                    $colaborador = Colaborador::find($value);
+                    foreach ($data_tiempos_procedimiento as $value) {
+                        if ($value->colaborador == 1 && $value->id == $colaborador->id) {
+                            $colaborador->gasto = $value->gasto;
+                            $colaborador->tiempo_trabajo = $value->tiempo_trabajo;
+                            $colaborador->tiempo_formato = $value->tiempo_formato;
+                        }
+                    }
+                    $colaboradores[] = $colaborador;
+                }
+            }
+        //$pdf = PDF::loadView('produccion.procesos.detallePDF', compact('proceso', 'insumos', 'maquinarias', 'colaboradores'));
+    }
+
+    //Para poder almacenar en el almacen de productos
+    public function almacenarProductoEnAlmacen(string $id)
+    {
+        $produccion = Produccion::find($id);
+        $productos = Producto::all();
+        return view('produccion.almacen.add', compact('produccion', 'productos'));
     }
 }

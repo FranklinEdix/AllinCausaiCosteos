@@ -48,6 +48,9 @@
                                                 Producto final
                                             </th>
                                             <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
+                                                Precio Unitario
+                                            </th>
+                                            <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
                                                 Cantidad de producto final
                                             </th>
                                             <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
@@ -100,6 +103,10 @@
                                                     <td class="text-center">
                                                         <p class="text-xs font-weight-bold mb-0">
                                                             {{ $value->producto_final }}</p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $value->precio_unitario }}</p>
                                                     </td>
                                                     <td class="text-center">
                                                         <p class="text-xs font-weight-bold mb-0">
@@ -160,6 +167,10 @@
                                                                 </span>
                                                             </button>
                                                         </form>
+                                                        <a href="{{ route('produccion.edit', $value->id) }}"
+                                                            class="mx-3 btn btn-dark" type="button">
+                                                            Finalizar Producción
+                                                        </a>
                                                     </td>
                                                 </tr>
                                             @endforeach

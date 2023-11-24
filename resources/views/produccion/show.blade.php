@@ -61,10 +61,11 @@
                                                                     {{ $proceso->gasto_total_colaboradores }}
                                                                 </p>
                                                                 <br>
-                                                                <div class="acciones">
-                                                                    {{-- <button class="btn btn-success">
+                                                                <div class="acciones d-flex">
+                                                                    <a href="{{ route('produccion.detalle.proceso', $proceso->id) }}"
+                                                                        class="btn btn-success mr-2">
                                                                         Ver más detalles
-                                                                    </button> --}}
+                                                                    </a>
                                                                     <form
                                                                         action="{{ route('produccion.eliminar.proceso', $proceso->id) }}"
                                                                         method="POST" enctype="multipart/form-data">
