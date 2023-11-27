@@ -408,6 +408,12 @@ class ProduccionController extends Controller
         //$pdf = PDF::loadView('produccion.procesos.detallePDF', compact('proceso', 'insumos', 'maquinarias', 'colaboradores'));
     }
 
+    public function detalleProduccion(string $id)
+    {
+        $produccion = Produccion::find($id);
+        return view('produccion.detalle_produccion', compact('produccion'));
+    }
+
     //Para poder almacenar en el almacen de productos
     public function almacenarProductoEnAlmacen(string $id)
     {

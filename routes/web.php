@@ -98,6 +98,9 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Exportar en pdf y excel
     Route::get('produccion/exportar/pdf/{id}',[ProduccionController::class, 'exportarDetalleProduccionPDF'])->name('produccion.exportar.pdf');
+
+    //Detalle de producción
+    Route::get('produccion/detalle/{id}',[ProduccionController::class, 'detalleProduccion'])->name('produccion.detalle');
 });
 
 

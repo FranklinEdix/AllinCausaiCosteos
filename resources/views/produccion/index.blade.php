@@ -19,7 +19,7 @@
                         <div class="card-header pb-0">
                             <div class="d-flex flex-row justify-content-between">
                                 <div>
-                                    <h5 class="mb-0">Administrar Maquinarias</h5>
+                                    <h5 class="mb-0">Administrar Producción</h5>
                                 </div>
                                 <a href="{{ route('produccion.create') }}" class="btn bg-gradient-primary btn-sm mb-0"
                                     type="button">+&nbsp; Nueva
@@ -152,25 +152,36 @@
                                                             class="mx-1 btn btn-success" type="button">
                                                             <i class="fas fa-eye"></i>
                                                         </a>
-                                                        <a href="{{ route('produccion.edit', $value->id) }}"
-                                                            class="mx-3 btn btn-dark" type="button">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        <form action="{{ route('produccion.destroy', $value->id) }}"
-                                                            method="POST" enctype="multipart/form-data">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button class="btn btn-danger"
-                                                                onclick="return confirm('¿Quieres borrar los datos?, ¡No se podrán reuperar despues!.')">
-                                                                <span>
-                                                                    <i class="cursor-pointer fas fa-trash"></i>
-                                                                </span>
-                                                            </button>
-                                                        </form>
-                                                        <a href="{{ route('produccion.edit', $value->id) }}"
-                                                            class="mx-3 btn btn-dark" type="button">
-                                                            Finalizar Producción
-                                                        </a>
+                                                        @if ($value->estado == 0)
+                                                            <a href="{{ route('produccion.edit', $value->id) }}"
+                                                                class="mx-3 btn btn-dark" type="button">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                            <form action="{{ route('produccion.destroy', $value->id) }}"
+                                                                method="POST" enctype="multipart/form-data">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button class="btn btn-danger"
+                                                                    onclick="return confirm('¿Quieres borrar los datos?, ¡No se podrán reuperar despues!.')">
+                                                                    <span>
+                                                                        <i class="cursor-pointer fas fa-trash"></i>
+                                                                    </span>
+                                                                </button>
+                                                            </form>
+                                                            <a href="{{ route('produccion.edit', $value->id) }}"
+                                                                class="mx-3 btn btn-info" type="button">
+                                                                Finalizar Producción
+                                                            </a>
+                                                            <a href="{{ route('produccion.detalle', $value->id) }}"
+                                                                class="mx-3 btn btn-primary" type="button">
+                                                                Ver Detalles
+                                                            </a>
+                                                        @elseif ($value->estado == 1)
+                                                            <a href="{{ route('produccion.detalle', $value->id) }}"
+                                                                class="mx-3 btn btn-primary" type="button">
+                                                                Ver Detalles
+                                                            </a>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @endforeach

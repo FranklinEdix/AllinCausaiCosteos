@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('cantidad_producto_final');
             $table->decimal('gasto_total', 8, 2)->default(0.00);
             $table->decimal('precio_total', 8, 2)->default(0.00);
+            $table->integer('estado')->default(0);
             $table->timestamps();
         });
     }
