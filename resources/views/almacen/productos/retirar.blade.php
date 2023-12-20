@@ -9,12 +9,12 @@
                         <div class="card-header pb-0">
                             <div class="d-flex flex-row justify-content-between">
                                 <div>
-                                    <h5 class="mb-0">Agregar producto</h5>
+                                    <h5 class="mb-0">Retirar producto</h5>
                                 </div>
                             </div>
                         </div>
                         <div class="card-body px-0 pt-0 pb-2">
-                            <form action="{{ route('almacen.add.producto', $almacen->id) }}" method="POST"
+                            <form action="{{ route('almacen.retirar.producto.descontar', $almacen->id) }}" method="POST"
                                 enctype="multipart/form-data">
                                 @csrf
                                 <div class="row">
@@ -32,7 +32,9 @@
                                                 <option value="{{ null }}" selected disabled>Selecione un producto
                                                 </option>
                                                 @foreach ($productos as $producto)
-                                                    <option value="{{ $producto->id }}">{{ $producto->name }}</option>
+                                                    <option value="{{ $producto->id_producto }}">
+                                                        {{ $producto->nombre_producto }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                             @error('producto')
@@ -46,7 +48,8 @@
                                                 <option value="{{ null }}" selected disabled>Selecione un producto
                                                 </option>
                                                 @foreach ($insumos as $insumo)
-                                                    <option value="{{ $insumo->id }}">{{ $insumo->name }}</option>
+                                                    <option value="{{ $insumo->id_insumo }}">{{ $insumo->nombre_producto }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                             @error('producto')
@@ -54,15 +57,16 @@
                                             @enderror
                                         </div>
 
-                                        <label for="proveedor">Proveedor: </label>
-                                        <select name="proveedor" id="" class="form-control">
-                                            <option value="{{ null }}" selected disabled>Seleccione un proveedor
+                                        <label for="lugar_destino">Lugar de destino: </label>
+                                        <select name="lugar_destino" id="" class="form-control">
+                                            <option value="{{ null }}" selected disabled>Seleccione un lugar de
+                                                destino
                                             </option>
-                                            @foreach ($proveedores as $proveedor)
-                                                <option value="{{ $proveedor->id }}">{{ $proveedor->name }}</option>
+                                            @foreach ($destinos as $destino)
+                                                <option value="{{ $destino->id }}">{{ $destino->name }}</option>
                                             @endforeach
                                         </select>
-                                        @error('proveedor')
+                                        @error('lugar_destino')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
 

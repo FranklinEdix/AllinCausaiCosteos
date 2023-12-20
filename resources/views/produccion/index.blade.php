@@ -168,10 +168,12 @@
                                                                     </span>
                                                                 </button>
                                                             </form>
-                                                            <a href="{{ route('produccion.edit', $value->id) }}"
-                                                                class="mx-3 btn btn-info" type="button">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-toggle="modal" data-bs-target="#exampleModal"
+                                                                data-id="{{ $value->id }}"
+                                                                style="margin-left: 4px !important;">
                                                                 Finalizar Producción
-                                                            </a>
+                                                            </button>
                                                             <a href="{{ route('produccion.detalle', $value->id) }}"
                                                                 class="mx-3 btn btn-primary" type="button">
                                                                 Ver Detalles
@@ -190,6 +192,35 @@
                                 </table>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Finalizar Producción</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ route('produccion.finalizar') }}" id="actualizar_produccion" method="POST">
+                            @csrf
+                            <input type="hidden" name="produccion_id" id="produccion_id" value="">
+                            <div class="mb-3">
+                                <label for="almacen" class="col-form-label">Seleccione almacen:</label>
+                                <select name="almacen" id="almacen" class="form-control" required>
+                                    <option value="{{ null }}">Seleccione un almacen</option>
+                                    @foreach ($almacen as $value)
+                                        <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <input type="submit" class="btn btn-primary" value="Enviar">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
                     </div>
                 </div>
             </div>
@@ -223,6 +254,18 @@
                     previous: '<'
                 }
             }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('#exampleModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget); // Botón que activó el modal
+                var id = button.data('id'); // Extrae el valor del atributo data-id
+
+                // Asigna el ID al campo oculto del formulario
+                $('#produccion_id').val(id);
+            });
         });
     </script>
 @endsection

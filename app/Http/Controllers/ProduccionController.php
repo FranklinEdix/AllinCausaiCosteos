@@ -11,6 +11,7 @@ use App\Models\DetailsProduccion;
 use App\Models\Producto;
 use App\Models\Almacen;
 use App\Models\AlmacenProducto;
+use App\Models\InventarioAlmacen;
 
 class ProduccionController extends Controller
 {
@@ -51,7 +52,8 @@ class ProduccionController extends Controller
         }
         //return $data;
         //return $data;
-        return view('produccion.index', compact('produccion'));
+        $almacen = Almacen::all();
+        return view('produccion.index', compact('produccion', 'almacen'));
     }
 
     /**
@@ -410,15 +412,133 @@ class ProduccionController extends Controller
 
     public function detalleProduccion(string $id)
     {
-        $produccion = Produccion::find($id);
-        return view('produccion.detalle_produccion', compact('produccion'));
+        $produccion = Produccion::join('productos', 'produccions.producto_final', '=', 'productos.id')
+            ->select('produccions.*', 'productos.id as id_producto', 'productos.name as producto_final')
+            ->where('produccions.id', $id)
+            ->first();
+        $gastos = $this->gastosPorInsumoColaboradoresMaquina($produccion->id);
+        $insumos = $this->traerInsumosProduccion($produccion->id);
+        $colaboradores = $this->traerColaboradoresProduccion($produccion->id);
+        $maquinarias = $this->traerMaquinariasProduccion($produccion->id);
+        //return $maquinarias;
+        return view('produccion.detalle_produccion', compact('produccion', 'gastos', 'insumos', 'colaboradores', 'maquinarias'));
+    }
+
+    public function gastosPorInsumoColaboradoresMaquina($id)
+    {
+        $gasto_total_insumos = 0;
+        $gasto_total_maquinarias = 0;
+        $gasto_total_colaboradores = 0;
+        $gasto_total_insumos = detailsProduccion::where('produccion_id', $id)->sum('gasto_total_insumos');
+        $gasto_total_maquinarias = detailsProduccion::where('produccion_id', $id)->sum('gasto_total_maquinarias');
+        $gasto_total_colaboradores = detailsProduccion::where('produccion_id', $id)->sum('gasto_total_colaboradores');
+        $data = [
+            'gasto_total_insumos' => $gasto_total_insumos,
+            'gasto_total_maquinarias' => $gasto_total_maquinarias,
+            'gasto_total_colaboradores' => $gasto_total_colaboradores
+        ];
+        return $data;
+    }
+
+    public function traerInsumosProduccion(string $id)
+    {
+        $gasto_total_insumos = detailsProduccion::where('produccion_id', $id)->get();
+        $data = [];
+        foreach ($gasto_total_insumos as $proceso) {
+            $data_insumos = explode(',',$proceso->insumo_id);
+            $data_tiempos_procedimiento = json_decode($proceso->data_tiempos_procedimiento);
+            foreach ($data_insumos as $value) {
+                if (!empty($value && !empty($data_tiempos_procedimiento))) {
+                    $insumo = Insumo::find($value);
+                    foreach ($data_tiempos_procedimiento as $value) {
+                        if ($value->insumo == 1 && $value->id == $insumo->id) {
+                            $insumo->gasto = $value->gasto;
+                            $insumo->cantidad = $value->cantidad;
+                        }
+                    }
+                    $data[] = $insumo;
+                }
+            }
+        }
+        return $data;
+    }
+
+    public function traerColaboradoresProduccion(string $id)
+    {
+        $gasto_total_colaboradores = detailsProduccion::where('produccion_id', $id)->get();
+        $data = [];
+        foreach ($gasto_total_colaboradores as $proceso) {
+            $data_colaborador = explode(',',$proceso->colaborador_id);
+            $data_tiempos_procedimiento = json_decode($proceso->data_tiempos_procedimiento);
+            foreach ($data_colaborador as $value) {
+                if (!empty($value && !empty($data_tiempos_procedimiento))) {
+                    $colaborador = Colaborador::find($value);
+                    foreach ($data_tiempos_procedimiento as $value) {
+                        if ($value->colaborador == 1 && $value->id == $colaborador->id) {
+                            $colaborador->gasto = $value->gasto;
+                            $colaborador->tiempo_trabajo = $value->tiempo_trabajo;
+                            $colaborador->tiempo_formato = $value->tiempo_formato;
+                        }
+                    }
+                    $data[] = $colaborador;
+                }
+            }
+        }
+        return $data;
+    }
+
+    public function traerMaquinariasProduccion(string $id)
+    {
+        $gasto_total_maquinarias = detailsProduccion::where('produccion_id', $id)->get();
+        $data = [];
+        foreach ($gasto_total_maquinarias as $proceso) {
+            $data_maquinaria = explode(',',$proceso->maquinaria_id);
+            $data_tiempos_procedimiento = json_decode($proceso->data_tiempos_procedimiento);
+            foreach ($data_maquinaria as $value) {
+                if (!empty($value && !empty($data_tiempos_procedimiento))) {
+                    $maquina = Maquinaria::find($value);
+                    foreach ($data_tiempos_procedimiento as $value) {
+                        if ($value->maquinaria == 1 && $value->id == $maquina->id) {
+                            $maquina->gasto = $value->gasto;
+                            $maquina->tiempo_trabajo = $value->tiempo_trabajo;
+                            $maquina->tiempo_formato = $value->tiempo_formato;
+                        }
+                    }
+                    $data[] = $maquina;
+                }
+            }
+        }
+        return $data;
     }
 
     //Para poder almacenar en el almacen de productos
-    public function almacenarProductoEnAlmacen(string $id)
+    public function finalizarProduccion(Request $request)
     {
-        $produccion = Produccion::find($id);
-        $productos = Producto::all();
-        return view('produccion.almacen.add', compact('produccion', 'productos'));
+
+
+        $produccion = Produccion::find($request->produccion_id);
+        $almacenar_productos = new AlmacenProducto();
+        $almacenar_productos->id_almacen = $request->almacen;
+        $almacenar_productos->id_producto = $produccion->producto_final;
+        $almacenar_productos->cantidad = $produccion->cantidad_producto_final;
+        $almacenar_productos->presentacion = $produccion->presentacion;
+        $almacenar_productos->save();
+
+        $detalle = [
+            'cantidad' => $produccion->cantidad_producto_final,
+            'tipo' => 1,
+            'doc' => $produccion->id,
+        ];
+
+        $registrar_movimiento = new InventarioAlmacen();
+        $registrar_movimiento->id_almacen = $request->almacen;
+        $registrar_movimiento->id_producto = $produccion->producto_final;
+        $registrar_movimiento->detalle = json_encode($detalle);
+        $registrar_movimiento->save();
+
+        $produccion->estado = 1;
+        $produccion->save();
+
+        return redirect()->route('produccion.index')->with('success', 'Producción finalizada satisfactoriamente');
     }
 }

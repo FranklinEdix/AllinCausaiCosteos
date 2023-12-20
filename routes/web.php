@@ -101,6 +101,9 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Detalle de producción
     Route::get('produccion/detalle/{id}',[ProduccionController::class, 'detalleProduccion'])->name('produccion.detalle');
+
+    //Finalizar producción y enviar los productos al almacen
+    Route::post('produccion/finalizar',[ProduccionController::class, 'finalizarProduccion'])->name('produccion.finalizar');
 });
 
 
@@ -133,6 +136,17 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/almacen/agregar_producto/{id}', [AlmacenController::class, 'agregarProducto'])->name('almacen.agregar.producto');
 	Route::post('/almacen/add_producto/{id}', [AlmacenController::class, 'addproductoAlmacen'])->name('almacen.add.producto');
 	Route::delete('/almacen/remove_producto/{id}', [AlmacenController::class, 'removeProducto'])->name('almacen.remove.producto');
+
+    //retirar producto del almacen
+    Route::get('/almacen/retirar_producto/{id}', [AlmacenController::class, 'retirarProducto'])->name('almacen.retirar.producto');
+    Route::post('/almacen/retirar_producto/{id}', [AlmacenController::class, 'retirarProductoAlmacen'])->name('almacen.retirar.producto.descontar');
+
+
+    //Ver inventario de un producto
+    Route::get('/almacen/ver_inventario/{id}/{id_almacen}/{tipo}',[AlmacenController::class, 'verInventario'])->name('almacen.ver.inventario');
+
+    //Exportar en pdf y excel
+    Route::get('/almacen/exportar/{id}/{id_almacen}',[AlmacenController::class, 'exportarInventario'])->name('almacen.exportar.pdf');
 });
 
 //Maquinarias

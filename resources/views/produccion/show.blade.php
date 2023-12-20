@@ -23,9 +23,11 @@
                                     <h5 class="mb-0">Detalle de {{ $produccion->nombre }}</h5>
                                 </div>
                                 <div class="">
-                                    <a href="{{ route('produccion.add.proceso', $produccion->id) }}"
-                                        class="btn bg-gradient-primary btn-sm mb-0" type="button">+&nbsp; Nuevo
-                                        Proceso</a>
+                                    @if ($produccion->estado == 0)
+                                        <a href="{{ route('produccion.add.proceso', $produccion->id) }}"
+                                            class="btn bg-gradient-primary btn-sm mb-0" type="button">+&nbsp; Nuevo
+                                            Proceso</a>
+                                    @endif
                                     <a href="{{ route('produccion.index') }}"
                                         class="btn bg-gradient-danger btn-sm mb-0">Volver</a>
                                 </div>
@@ -66,15 +68,17 @@
                                                                         class="btn btn-success mr-2">
                                                                         Ver más detalles
                                                                     </a>
-                                                                    <form
-                                                                        action="{{ route('produccion.eliminar.proceso', $proceso->id) }}"
-                                                                        method="POST" enctype="multipart/form-data">
-                                                                        @csrf
-                                                                        @method('DELETE')
-                                                                        <button type="submit" class="btn btn-danger">
-                                                                            <i class="cursor-pointer fas fa-trash"></i>
-                                                                        </button>
-                                                                    </form>
+                                                                    @if ($produccion->estado == 0)
+                                                                        <form
+                                                                            action="{{ route('produccion.eliminar.proceso', $proceso->id) }}"
+                                                                            method="POST" enctype="multipart/form-data">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                            <button type="submit" class="btn btn-danger">
+                                                                                <i class="cursor-pointer fas fa-trash"></i>
+                                                                            </button>
+                                                                        </form>
+                                                                    @endif
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">

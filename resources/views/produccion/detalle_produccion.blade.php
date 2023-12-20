@@ -2,6 +2,17 @@
 
 @section('styles')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <style>
+        .card-gasto {
+            background-color: #e24a68;
+            color: white;
+        }
+
+        .card-ganancia {
+            background-color: #2dce89;
+            color: white;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -30,30 +41,35 @@
                         </div>
                     </div>
                 </div>
+                @php
+                    $ganancia = $produccion->precio_total - $produccion->gasto_total;
+                    $porcentaje = ($ganancia * 100) / $produccion->precio_total;
+                    $porcentaje = round($porcentaje, 0, PHP_ROUND_HALF_DOWN);
+                @endphp
                 <div class="col-md-6">
-                    <div class="card mb-4 mx-4">
-                        <div class="card-header pb-0">
+                    <div class="card mb-4 mx-4 card-ganancia">
+                        <div class="card-header pb-0 card-ganancia">
                             <div class="d-flex flex-row justify-content-between">
-                                Ganancias Totales
+                                <b>Ganancias Totales</b>
                             </div>
                         </div>
                         <div class="card-body px-0 pt-0 pb-2 mt-4">
                             <div class="text-center">
-                                <h1>500</h1>
+                                <h1 class="text-white">S/ {{ $ganancia }} ({{ $porcentaje }}%)</h1>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card mb-4 mx-4">
-                        <div class="card-header pb-0">
+                    <div class="card mb-4 mx-4 card-gasto">
+                        <div class="card-header pb-0 card-gasto">
                             <div class="d-flex flex-row justify-content-between">
-                                Gatos Totales
+                                <b>Gatos Totales</b>
                             </div>
                         </div>
                         <div class="card-body px-0 pt-0 pb-2 mt-4">
                             <div class="text-center">
-                                <h1>500</h1>
+                                <h1 class="text-white">S/ {{ $produccion->gasto_total }} ({{ 100 - $porcentaje }}%)</h1>
                             </div>
                         </div>
                     </div>
@@ -67,7 +83,7 @@
                         </div>
                         <div class="card-body px-0 pt-0 pb-2 mt-4">
                             <div class="text-center">
-                                <h1>500</h1>
+                                <h1>S/ {{ $gastos['gasto_total_insumos'] }}</h1>
                             </div>
                         </div>
                     </div>
@@ -81,7 +97,7 @@
                         </div>
                         <div class="card-body px-0 pt-0 pb-2 mt-4">
                             <div class="text-center">
-                                <h1>500</h1>
+                                <h1>S/ {{ $gastos['gasto_total_colaboradores'] }}</h1>
                             </div>
                         </div>
                     </div>
@@ -95,7 +111,7 @@
                         </div>
                         <div class="card-body px-0 pt-0 pb-2 mt-4">
                             <div class="text-center">
-                                <h1>500</h1>
+                                <h1>S/ {{ $gastos['gasto_total_maquinarias'] }}</h1>
                             </div>
                         </div>
                     </div>
@@ -119,12 +135,22 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="text-center text-sm">Insumo Uno</td>
-                                            <td class="text-center text-sm">30</td>
-                                            <td class="text-center text-sm">S/. 20</td>
-                                            <td class="text-center text-sm">S/. 600</td>
-                                        </tr>
+                                        @if (empty($insumos))
+                                            <tr>
+                                                <td colspan="4" class="text-center text-sm">No hay insumos registrados
+                                                </td>
+                                            </tr>
+                                        @else
+                                            @foreach ($insumos as $insumo)
+                                                <tr>
+                                                    <td class="text-center text-sm">{{ $insumo->name }}</td>
+                                                    <td class="text-center text-sm">{{ $insumo->cantidad }}</td>
+                                                    <td class="text-center text-sm">S/. {{ $insumo->precio_presentacion }}
+                                                    </td>
+                                                    <td class="text-center text-sm">S/. {{ $insumo->gasto }}</td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>
@@ -143,19 +169,34 @@
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th class="text-center text-sm">Nombre</th>
-                                            <th class="text-center text-sm">Cantidad</th>
-                                            <th class="text-center text-sm">Precio</th>
+                                            <th class="text-center text-sm">Nombre Completo</th>
+                                            <th class="text-center text-sm">Tiempo Trabajo</th>
+                                            <th class="text-center text-sm">Sueldo Hora</th>
                                             <th class="text-center text-sm">Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="text-center text-sm">Insumo Uno</td>
-                                            <td class="text-center text-sm">30</td>
-                                            <td class="text-center text-sm">S/. 20</td>
-                                            <td class="text-center text-sm">S/. 600</td>
-                                        </tr>
+                                        @if (empty($colaboradores))
+                                            <tr>
+                                                <td colspan="4" class="text-center text-sm">No hay colaboradores
+                                                    registrados
+                                                </td>
+                                            </tr>
+                                        @else
+                                            @foreach ($colaboradores as $colaborador)
+                                                <tr>
+                                                    <td class="text-center text-sm">
+                                                        {{ $colaborador->name . ' ' . $colaborador->last_name }}</td>
+                                                    <td class="text-center text-sm">
+                                                        {{ $colaborador->tiempo_trabajo . ' ' . $colaborador->tiempo_formato }}
+                                                    </td>
+                                                    <td class="text-center text-sm">S/.
+                                                        {{ $colaborador->sueldo_hora }}
+                                                    </td>
+                                                    <td class="text-center text-sm">S/. {{ $colaborador->gasto }}</td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>
@@ -175,18 +216,33 @@
                                     <thead>
                                         <tr>
                                             <th class="text-center text-sm">Nombre</th>
-                                            <th class="text-center text-sm">Cantidad</th>
-                                            <th class="text-center text-sm">Precio</th>
+                                            <th class="text-center text-sm">Tiempo Trabajo</th>
+                                            <th class="text-center text-sm">Gasto Hora</th>
                                             <th class="text-center text-sm">Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="text-center text-sm">Insumo Uno</td>
-                                            <td class="text-center text-sm">30</td>
-                                            <td class="text-center text-sm">S/. 20</td>
-                                            <td class="text-center text-sm">S/. 600</td>
-                                        </tr>
+                                        @if (empty($maquinarias))
+                                            <tr>
+                                                <td colspan="4" class="text-center text-sm">No hay maquinarias
+                                                    registrados
+                                                </td>
+                                            </tr>
+                                        @else
+                                            @foreach ($maquinarias as $maquinaria)
+                                                <tr>
+                                                    <td class="text-center text-sm">
+                                                        {{ $maquinaria->nombre }}</td>
+                                                    <td class="text-center text-sm">
+                                                        {{ $maquinaria->tiempo_trabajo . ' ' . $maquinaria->tiempo_formato }}
+                                                    </td>
+                                                    <td class="text-center text-sm">S/.
+                                                        {{ $maquinaria->precio_consumo_hora }}
+                                                    </td>
+                                                    <td class="text-center text-sm">S/. {{ $maquinaria->gasto }}</td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>

@@ -28,12 +28,12 @@
                                 <a href="{{ route('produccion.show', $proceso->produccion_id) }}" class="btn btn-danger">
                                     Cerrar
                                 </a>
-                                <a href="{{ route('produccion.exportar.pdf', $proceso->id) }}" class="btn btn-primary">
+                                {{-- <a href="{{ route('produccion.exportar.pdf', $proceso->id) }}" class="btn btn-primary">
                                     PDF
                                 </a>
                                 <a href="#" class="btn btn-secondary">
                                     EXCEL
-                                </a>
+                                </a> --}}
                             </div>
                         </div>
                     </div>

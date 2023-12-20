@@ -13,27 +13,33 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show text-white" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
             <div class="row">
                 <div class="col-12">
                     <div class="card mb-4 mx-4">
                         <div class="card-header pb-0">
                             <div class="d-flex flex-row justify-content-between">
                                 <div>
-                                    <h5 class="mb-0">Almacen: {{ $almacen->name }}</h5>
+                                    <h5 class="mb-0">Registro de Movimientos del Producto: {{ $producto->name }}</h5>
                                 </div>
                                 <div class="float-right">
-                                    <a href="{{ route('almacen.agregar.producto', $almacen->id) }}"
-                                        class="btn bg-gradient-primary btn-sm mb-0" type="button">+&nbsp; Agregar
-                                        Productos</a>
-                                    <a href="{{ route('almacen.retirar.producto', $almacen->id) }}"
-                                        class="btn bg-secondary btn-sm mb-0 text-white" type="button">-&nbsp; Retirar
-                                        Producto</a>
+                                    <button type="button" class="btn bg-gradient-primary btn-sm mb-0"
+                                        data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        Exportar
+                                    </button>
+                                    <a href="{{ route('almacen.show', $id_almacen) }}"
+                                        class="btn bg-danger btn-sm mb-0 text-white" type="button">Volver</a>
                                 </div>
                             </div>
                         </div>
                         <div class="card-body px-0 pt-0 pb-2 mt-4">
                             <div class="table-responsive p-3">
-                                <table id="almacen_productos" class="table table-striped align-items-center mb-0">
+                                <table id="almacen_productos_registros" class="table table-striped align-items-center mb-0">
                                     <thead>
                                         <tr>
                                             <th class="text-uppercase text-dark text-xxs font-weight-bolder">
@@ -45,20 +51,14 @@
                                             </th>
                                             <th
                                                 class="text-uppercase text-center text-dark text-xxs font-weight-bolder ps-2">
-                                                Producto
-                                            </th>
-                                            <th
-                                                class="text-uppercase text-center text-dark text-xxs font-weight-bolder ps-2">
-                                                Proveedor
+                                                Registro
                                             </th>
                                             <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
                                                 Cantidad
                                             </th>
-                                            <th class="text-center text-uppercase text-dark text-xxs font-weight-bolder">
-                                                Presentación
-                                            </th>
-                                            <th class="text-uppercase text-dark text-xxs font-weight-bolder">
-                                                Aciones
+                                            <th
+                                                class="text-uppercase text-center text-dark text-xxs font-weight-bolder ps-2">
+                                                Documento
                                             </th>
                                         </tr>
                                     </thead>
@@ -66,72 +66,41 @@
                                         @php
                                             $i = 1;
                                         @endphp
-                                        @if (empty($almacen_productos))
+                                        @if (empty($inventario))
                                             <tr>
                                                 <td colspan="5" class="text-center">
                                                     <h4>No hay almacenes registrados</h4>
                                                 </td>
                                             </tr>
                                         @else
-                                            @foreach ($almacen_productos as $almacen_producto)
+                                            @foreach ($inventario as $value)
                                                 <tr>
                                                     <td class="ps-4">
                                                         <p class="text-xs font-weight-bold mb-0">{{ $i++ }}</p>
                                                     </td>
                                                     <td class="text-center">
                                                         <p class="text-xs font-weight-bold mb-0">
-                                                            {{ date('Y-m-d', strtotime($almacen_producto->created_at)) }}
+                                                            {{ $value->hora_registro }}
                                                         </p>
                                                     </td>
                                                     <td class="text-center">
-                                                        <p class="text-xs font-weight-bold mb-0">
-                                                            {{ $almacen_producto->nombre_producto }}</p>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <p class="text-xs font-weight-bold mb-0">
-                                                            {{ $almacen_producto->nombre_proveedor ?? 'Origen de producción' }}
-                                                        </p>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <p class="text-xs font-weight-bold mb-0">
-                                                            {{ $almacen_producto->cantidad }}</p>
-                                                    </td>
-                                                    <td class="text-center">
-                                                        <p class="text-xs font-weight-bold mb-0">
-                                                            {{ $almacen_producto->presentacion }}</p>
-                                                    </td>
-                                                    <td class="d-flex">
-                                                        {{-- <a href="{{ route('almacen.show', $almacen_producto->id) }}"
-                                                            class="mx-1 btn btn-success" type="button">
-                                                            <i class="fas fa-eye"></i>
-                                                        </a>
-                                                        <a href="{{ route('almacen.edit', $almacen_producto->id) }}"
-                                                            class="mx-3 btn btn-dark" type="button">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a> --}}
-                                                        @if ($almacen_producto->tipo == 1)
-                                                            <a href="{{ route('almacen.ver.inventario', ['id' => $almacen_producto->id_producto, 'id_almacen' => $almacen->id, 'tipo' => 1]) }}"
-                                                                class="btn btn-info">
-                                                                Ver
-                                                            </a>
+                                                        @if ($value->tipo == 1)
+                                                            <span class="badge bg-success">Ingreso</span>
                                                         @else
-                                                            <a href="{{ route('almacen.ver.inventario', ['id' => $almacen_producto->id_insumo, 'id_almacen' => $almacen->id, 'tipo' => 2]) }}"
-                                                                class="btn btn-info">
-                                                                Ver
-                                                            </a>
+                                                            <span class="badge bg-danger">Salida</span>
                                                         @endif
-                                                        <form
-                                                            action="{{ route('almacen.remove.producto', $almacen_producto->id) }}"
-                                                            method="POST" enctype="multipart/form-data">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button class="btn btn-danger"
-                                                                onclick="return confirm('¿Quieres borrar los datos?, ¡No se podrán reuperar despues!.')">
-                                                                <span>
-                                                                    <i class="cursor-pointer fas fa-trash"></i>
-                                                                </span>
-                                                            </button>
-                                                        </form>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            {{ $value->cantidad }}</p>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <p class="text-xs font-weight-bold mb-0">
+                                                            <a href="{{ $value->doc }}" target="_blank"
+                                                                class="mx-1 btn btn-success" type="button">
+                                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                                            </a>
+                                                        </p>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -140,6 +109,39 @@
                                 </table>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- Modal para exportar --}}
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Exportar Inventario</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ route('almacen.exportar.pdf', ['id' => $id, 'id_almacen' => $id_almacen]) }}"
+                            method="GET">
+                            @csrf
+                            <input type="hidden" name="tipo_producto" value="{{ $tipo }}">
+                            <label for="tipo_reporte">Seleccione el tipo de reporte: </label>
+                            <select name="tipo_reporte" id="tipo_reporte" class="form-select form-select-sm">
+                                <option value="1">PDF</option>
+                                <option value="2">Excel</option>
+                            </select>
+                            <label for="fecha_inicio">Fecha Inicio: </label>
+                            <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control">
+                            <label for="fecha_fin">Fecha Fin: </label>
+                            <input type="date" name="fecha_fin" id="fecha_fin" class="form-control">
+                            <br>
+                            <button type="submit" class="btn btn-primary">Exportar</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+
                     </div>
                 </div>
             </div>
@@ -153,7 +155,7 @@
     <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-        new DataTable('#almacen_productos', {
+        new DataTable('#almacen_productos_registros', {
             language: {
                 info: 'Mostrando la página _PAGE_ de _PAGES_',
                 infoEmpty: 'No hay registros disponibles',
